@@ -20,7 +20,8 @@
     
     "test": "start node node_modules/karma/bin/karma start test/karma.conf.js && start jasmine-node test/unit/api --autotest --watch .",
     "test-single-run": "node node_modules/karma/bin/karma start test/karma.conf.js  --single-run",
-
+    "server-test": "start jasmine-node test/unit/api --autotest --watch .",
+    
     "preupdate-webdriver": "npm install",
     "update-webdriver": "webdriver-manager update",
 
