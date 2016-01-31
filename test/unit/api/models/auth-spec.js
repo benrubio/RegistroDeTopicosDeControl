@@ -46,8 +46,9 @@ describe('Google Identity Auth Component succesful authN', function () {
     expect(request.identity).toBeDefined();
   });
   
-  it('should set identity to the user_id field from the gtoken', function () {
-    expect(request.identity).toEqual('10309694082854684614');
+  it('should set identity with the user_id field from the gtoken', function () {
+    expect(request.identity).toBeDefined();
+    expect(request.identity.userId).toEqual('10309694082854684614');
   });
   
   it('should set gtoken to the raw gtoken', function () {

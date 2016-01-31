@@ -12,7 +12,7 @@ var getIdentity = function (request, response, next) {
     next();
   } else {
     gitkitClient.verifyGitkitToken(request.headers.gtoken, function (err, resp) {
-      request.identity = resp.user_id;
+      request.identity = { userId: resp.user_id };
       request.gtoken = resp;
       next();
     });
