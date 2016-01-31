@@ -1,0 +1,11 @@
+{ 
+  iss: 'https://identitytoolkit.google.com/',
+  aud: '496872562065-fnl6ua65hva2d0bkid9r156rp1rqtv9p.apps.googleusercontent.com',
+  iat: 1453272484,
+  exp: 1454482084,
+  user_id: '10309694082854684614',
+  email: 'benrubioben@gmail.com',
+  provider_id: 'google.com',
+  verified: true,
+  display_name: 'Salvador Rubio' 
+}

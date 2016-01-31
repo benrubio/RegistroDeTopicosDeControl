@@ -1,0 +1,7 @@
+{
+  "clientId": "496872562065-fnl6ua65hva2d0bkid9r156rp1rqtv9p.apps.googleusercontent.com",
+  "serviceAccountEmail": "496872562065-t7tap33a4ninl6bjm2krmj4ekpl52pkg@developer.gserviceaccount.com",
+  "serviceAccountPrivateKeyFile": "C:\\IPN\\Secrets\\TestProject-8ef71720481e.pem",
+  "widgetUrl": "http://localhost:8000/index.html",
+  "cookieName": "gtoken"
+}
