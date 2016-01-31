@@ -2,7 +2,10 @@
 /*global module*/
 
 var getProjects = function (userId) {
-  return { resultCode: 'NotFound'};
+  return { resultCode: 'OK', result: {}};
+};
+
+var createProject = function (project) {
 };
 
 module.exports.getProjects = getProjects;

@@ -1,9 +1,9 @@
 'use strict';
-/*global require, describe, beforeEach, it, expect */
+/*global require, describe, beforeEach, it, expect, jasmine */
 
 var proxyquire = require('proxyquire');
 
-describe('projects model', function () {
+describe('get projects', function () {
   var model,
     projectsStore;
   
@@ -45,5 +45,28 @@ describe('projects model', function () {
     projects = model.getProjects({userId: '12345'});
     
     expect(projects.resultCode).toEqual('Unknown');
+  });
+});
+
+describe('create project', function () {
+  var model,
+    projectsStore;
+  
+  beforeEach(function () {
+    projectsStore = {};
+    model = proxyquire('../../../../models/projects.js', {'../dataStores/projectsStore.js': projectsStore});
+  });
+  
+  it('should create a project using data store', function () {
+    var project = {};
+    
+    projectsStore.createProject = jasmine.createSpy('createProject');
+    projectsStore.createProject.andCallFake(function (p) {
+      return p;
+    });
+    
+    project = model.createProject(project);
+    
+    expect(projectsStore.createProject).toHaveBeenCalledWith(project);
   });
 });
