@@ -1,28 +1,19 @@
+'use strict';
 /*global require, module, console */
 
-var model = require('../models/projects.js');
+var projectsStore = require('../dataStores/projectsStore.js');
 
-var express = require('express');
-var router = express.Router();
+var getProjects = function (userId) {
+  
+  var projectsFetch = projectsStore.getProjects(userId);
+  
+  if (projectsFetch.resultCode === 'NotFound') {
+    return { resultCode : 'NotFound' };
+  } else if (projectsFetch.resultCode === 'OK') {
+    return { resultCode : 'OK', result : projectsFetch.result };
+  }
+  
+  return { resultCode : 'Unknown' };
+};
 
-var GitkitClient = require('gitkitclient');
-
-var fs = require('fs');
-var gitkitClient = new GitkitClient(JSON.parse(fs.readFileSync('./gitkit-server-config.json')));
-
-/* GET projects */
-router.get('/', function (req, res, next) {
-  gitkitClient.verifyGitkitToken(req.headers.gtoken, function (err, resp) {
-    if (err) {
-      console.log('error');
-      res.set({'Access-Control-Allow-Origin' : '*', 'Expires' : '-1'}).send('Bad GToken');
-    } else {
-      
-      var projects = model.getProjects(resp);
-      console.log(resp);
-      res.set({'Expires' : '-1'}).send(projects.display_name);
-    }
-  });
-});
-
-module.exports = router;
+module.exports = {getProjects: getProjects};

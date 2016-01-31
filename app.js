@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 
 var echo = require('./routes/echo.js');
 var auth = require('./models/auth.js');
+var projects = require('./routes/projects.js');
 
 var app = express();
 
@@ -19,8 +20,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.set('etag', false);
 
 app.use('/echo', echo);
+app.use('/projects', projects);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
