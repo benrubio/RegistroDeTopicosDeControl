@@ -17,6 +17,10 @@ var projectsRoutes = {
       }
       
       response.status(500).end();
+    },
+    post: function (request, response) {
+      var projects = model.createProject(request.identity, request.body);
+      response.status(200).end();
     }
   }
 };

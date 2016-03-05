@@ -1,40 +1,48 @@
 'use strict';
 /*global describe, it, expect, beforeEach, spyOn, require, jasmine, runs, waitsFor */
 
-var fs = require('fs');
-
 describe('Google Identity Auth Component succesful authN', function () {
   var auth,
     request,
     response,
     nextSpy,
-    nextHasBeenCalled;
+    nextHasBeenCalled,
+    gitkitClient;
   
   beforeEach(function () {
     nextHasBeenCalled = false;
+    
     nextSpy = jasmine.createSpy('next');
     nextSpy.andCallFake(function () {
       nextHasBeenCalled = true;
     });
     
+    gitkitClient = {
+      verifyGitkitToken: function (token, callback) {
+        // TODO: properly define what a null error looks like
+        callback(null, { user_id: '10309694082854684614' });
+      }
+    };
+    spyOn(gitkitClient, 'verifyGitkitToken').andCallThrough();
+    
     request = {
       headers: {
-        gtoken: fs.readFileSync('./test/data/sampleGtokenHeader.txt', 'utf8')
+        gtoken: 'fakeGtokenHeaderValue'
       }
     };
     response = {};
     
     auth = require('../../../../models/auth.js');
-
+    auth.setGitkitClient(gitkitClient);
+    
     runs(function () {
-      auth(request, response, nextSpy);
+      auth.authN(request, response, nextSpy);
     });
-
+    
     waitsFor(function () {
-      return nextHasBeenCalled;
+      return nextSpy.calls.length === 1;
     }, 'Next function should have been called', 1000);
     
-    runs(function () {});
   });
   
   it('should call next when auth succeeds', function () {

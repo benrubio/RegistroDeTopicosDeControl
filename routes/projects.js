@@ -5,7 +5,7 @@ var express = require('express');
 var router = express.Router();
 var routes = require('./projectsRoutes.js');
 
-/* GET projects */
 router.get('/', routes['/'].get);
+router.post('/', routes['/'].post);
 
 module.exports = router;

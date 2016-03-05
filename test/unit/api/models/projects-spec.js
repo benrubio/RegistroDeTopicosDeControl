@@ -58,15 +58,16 @@ describe('create project', function () {
   });
   
   it('should create a project using data store', function () {
-    var project = {};
+    var project = {},
+      userId = {};
     
     projectsStore.createProject = jasmine.createSpy('createProject');
     projectsStore.createProject.andCallFake(function (p) {
       return p;
     });
     
-    project = model.createProject(project);
+    project = model.createProject(userId, project);
     
-    expect(projectsStore.createProject).toHaveBeenCalledWith(project);
+    expect(projectsStore.createProject).toHaveBeenCalledWith(userId, project);
   });
 });

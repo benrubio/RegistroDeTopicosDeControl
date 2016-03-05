@@ -16,8 +16,8 @@ var getProjects = function (userId) {
   return { resultCode : 'Unknown' };
 };
 
-var createProject = function (project) {
-  return projectsStore.createProject(project);
+var createProject = function (userId, project) {
+  return projectsStore.createProject(userId, project);
 }
 
 module.exports = {getProjects: getProjects, createProject: createProject};
