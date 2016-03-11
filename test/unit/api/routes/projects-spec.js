@@ -33,22 +33,22 @@ describe('projects get route', function () {
   
   it('should return 200 OK with projects when user is found', function () {
     var response = {
-      status: function (statusCode) {
-        expect(statusCode).toEqual(200);
-        return this;
-      },
+      status: jasmine.createSpy('status'),
+      set: jasmine.createSpy('set'),
       json: jasmine.createSpy('json')
     },
       projects = {};
+    
+    response.status.andReturn(response);
+    response.set.andReturn(response);
     
     model.getProjects = function (identity) {
       return { resultCode: 'OK', result: projects};
     };
     
-    spyOn(response, 'status').andCallThrough();
-    
     routes['/'].get({}, response);
-    expect(response.status).toHaveBeenCalled();
+    expect(response.status).toHaveBeenCalledWith(200);
+    expect(response.set).toHaveBeenCalledWith({ 'Expires': '-1' });
     expect(response.json).toHaveBeenCalledWith(projects);
   });
   

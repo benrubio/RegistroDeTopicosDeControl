@@ -12,7 +12,7 @@ var projectsRoutes = {
         response.status(404).end();
         return;
       } else if (projects.resultCode === 'OK') {
-        response.status(200).json(projects.result);
+        response.status(200).set({ 'Expires': '-1' }).json(projects.result);
         return;
       }
       
