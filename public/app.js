@@ -5,10 +5,11 @@
 var app = angular.module('RegistroDeTopicosDeControl', [
   'ngRoute',
   'ngCookies',
+  'RegistroDeTopicosDeControl.Home',
   'RegistroDeTopicosDeControl.SignUp',
   'topicosServices'
 ]);
 
 app.config(['$routeProvider', function ($routeProvider) {
-  $routeProvider.otherwise({redirectTo: '/signup'});
+  $routeProvider.otherwise({redirectTo: '/home'});
 }]);

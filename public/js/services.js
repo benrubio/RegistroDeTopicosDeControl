@@ -13,3 +13,14 @@ topicosServices.factory('Echo', ['$resource', '$cookies',
 	  }
     });
   }]);
+
+topicosServices.factory('Projects', ['$resource', '$cookies',
+  function($resource, $cookies){
+    return $resource('http://localhost:8000/projects', {}, {
+      query: {
+		  method:'GET',
+		  headers: { 'gtoken': $cookies.get('gtoken') },
+          isArray: true
+	  }
+    });
+  }]);
