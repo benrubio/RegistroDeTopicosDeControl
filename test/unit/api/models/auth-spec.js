@@ -1,21 +1,15 @@
 'use strict';
 /*global describe, it, expect, beforeEach, spyOn, require, jasmine, runs, waitsFor */
 
-describe('Google Identity Auth Component succesful authN', function () {
+describe('Auth Component succesful authN', function () {
   var auth,
     request,
     response,
     nextSpy,
-    nextHasBeenCalled,
     gitkitClient;
   
   beforeEach(function () {
-    nextHasBeenCalled = false;
-    
     nextSpy = jasmine.createSpy('next');
-    nextSpy.andCallFake(function () {
-      nextHasBeenCalled = true;
-    });
     
     gitkitClient = {
       verifyGitkitToken: function (token, callback) {
@@ -62,4 +56,98 @@ describe('Google Identity Auth Component succesful authN', function () {
   it('should set gtoken to the raw gtoken', function () {
     expect(request.gtoken).toBeDefined();
   });
+});
+
+describe('Auth component failures for authN', function () {
+  var auth,
+    request,
+    response,
+    nextSpy,
+    gitkitClient,
+    headerManipulationTest;
+  
+  beforeEach(function () {
+    nextSpy = jasmine.createSpy('next');
+    request = { headers: { } };
+    response = { };
+    
+    gitkitClient = {
+      verifyGitkitToken: jasmine.createSpy('verifyGitkitToken')
+    };
+             
+    auth = require('../../../../models/auth.js');
+    auth.setGitkitClient(gitkitClient);
+  });
+  
+  it('should respond Unauthorized when gToken header is not present', function () {
+    var authEndDetection, validation;
+    
+    response.status = jasmine.createSpy('status');
+    response.status.andReturn(response);
+    response.end = jasmine.createSpy('end');
+    
+    authEndDetection = function () {
+      return response.end.calls.length === 1;
+    };
+    validation = function () {
+      expect(response.status).toHaveBeenCalledWith(401);
+      expect(nextSpy.calls.length).toEqual(0);
+    };
+    
+    headerManipulationTest(authEndDetection, validation);
+  });
+  
+  it('should respond Unauthorized when gToken is empty', function () {
+    var authEndDetection, validation;
+    
+    response.status = jasmine.createSpy('status');
+    response.status.andReturn(response);
+    response.end = jasmine.createSpy('end');
+    
+    request.headers.gtoken = '';
+    
+    authEndDetection = function () {
+      return response.end.calls.length === 1;
+    };
+    validation = function () {
+      expect(response.status).toHaveBeenCalledWith(401);
+      expect(nextSpy.calls.length).toEqual(0);
+    };
+    
+    headerManipulationTest(authEndDetection, validation);
+  });
+  
+  it('should respond Unauthorized when gToken is whitespace', function () {
+    var authEndDetection, validation;
+    
+    response.status = jasmine.createSpy('status');
+    response.status.andReturn(response);
+    response.end = jasmine.createSpy('end');
+    
+    request.headers.gtoken = ' ';
+    
+    authEndDetection = function () {
+      return response.end.calls.length === 1;
+    };
+    validation = function () {
+      expect(response.status).toHaveBeenCalledWith(401);
+      expect(nextSpy.calls.length).toEqual(0);
+    };
+    
+    headerManipulationTest(authEndDetection, validation);
+  });
+  
+  headerManipulationTest = function (authEndDetection, validation) {
+    runs(function () {
+      auth.authN(request, response, nextSpy);
+    });
+    
+    waitsFor(function () {
+      return authEndDetection();
+    }, 'Auth should have ended', 100);
+
+    runs(function () {
+      validation();
+    });
+  };
 });

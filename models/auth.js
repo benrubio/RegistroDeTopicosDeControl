@@ -6,10 +6,12 @@ var authModule = function () {
     that = { };
   
   authN = function (request, response, next) {
-    if (request.headers.gtoken === undefined) {
-      next();
+    var gtoken = request.headers.gtoken;
+    if (gtoken === undefined
+         || gtoken.trim() === '') {
+      response.status(401).end();
     } else {
-      gitkitClient.verifyGitkitToken(request.headers.gtoken, function (err, resp) {
+      gitkitClient.verifyGitkitToken(gtoken, function (err, resp) {
         request.identity = { userId: resp.user_id };
         request.gtoken = resp;
         next();
