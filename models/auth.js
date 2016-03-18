@@ -1,6 +1,8 @@
 'use strict';
 /*global module, require */
 
+var userStore = require('../dataStores/userStore.js');
+
 var authModule = function () {
   var gitkitClient, authN, setGitkitClient,
     that = { };
@@ -12,9 +14,19 @@ var authModule = function () {
       response.status(401).end();
     } else {
       gitkitClient.verifyGitkitToken(gtoken, function (err, resp) {
-        request.identity = { userId: resp.user_id };
-        request.gtoken = resp;
-        next();
+        var identity = { id: resp.user_id, provider: resp.provider_id },
+          userResult;
+        
+        userResult = userStore.getUser(identity);
+        
+        if (userResult.resultCode === 'OK'
+             || userResult.resultCode === 'NotFound') {
+          request.identity = userResult.result;
+          request.gtoken = resp;
+          next();
+        } else {
+          response.status(500).end();
+        }
       });
     }
   };
