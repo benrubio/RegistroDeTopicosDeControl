@@ -5,3 +5,6 @@ Next step:
   Make sure all tests are accounted for.
   Handle auth error scenarios
   Handle body parsing errors
+  
+  I think I might use a simple service to store state accross controllers. They are singletons in the application so i can just use it as my datastore.
+  It can be smart enough to use cached versions or refreshed versions.

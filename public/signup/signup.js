@@ -9,6 +9,6 @@ angular.module('RegistroDeTopicosDeControl.SignUp', ['ngRoute'])
   });
 }])
 
-.controller('SignUpCtrl', ['$scope', 'Echo', function($scope, Echo) {
-  $scope.someVariable = Echo.query();
+.controller('SignUpCtrl', ['$scope', function($scope) {
+  $scope.someVariable = {display_name:'Hello World.'};
 }]);
