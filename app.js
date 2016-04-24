@@ -9,7 +9,6 @@ var GitkitClient = require('gitkitclient');
 var fs = require('fs');
 var gitkitClient = new GitkitClient(JSON.parse(fs.readFileSync('./gitkit-server-config.json')));
 
-var echo = require('./routes/echo.js');
 var auth = require('./models/auth.js');
 var projects = require('./routes/projects.js');
 
@@ -27,7 +26,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(auth.authN);
 app.set('etag', false);
 
-app.use('/echo', echo);
 app.use('/projects', projects);
 
 // catch 404 and forward to error handler
