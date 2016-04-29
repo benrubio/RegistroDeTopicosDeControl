@@ -10,6 +10,7 @@ module.exports = function(config){
       'public/bower_components/angular-mocks/angular-mocks.js',
       'public/bower_components/angular-cookies/angular-cookies.js',
       'public/js/**/*.js',
+      'public/home/*.js',
       'test/unit/public/**/*.js'
     ],
 

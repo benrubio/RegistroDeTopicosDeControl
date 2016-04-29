@@ -1,6 +1,6 @@
 
 describe('Projects Services', function () {
-  var projects, $httpBackend, $cookies;
+  var projects, $httpBackend, $cookies, basicProjectLoad;
   beforeEach(module('topicosServices'));
 
   beforeEach(inject(function (_projects_, _$httpBackend_, _$cookies_) {
@@ -9,12 +9,32 @@ describe('Projects Services', function () {
     $cookies = _$cookies_;
   }));
   
-  it('project count is 0 on cold start', function () {
-    expect(projects.list.length).toEqual(0);
+  it('fetches projects on initial load', function () {
+    basicProjectLoad();
   });
   
-  it('fetches projects on load', function () {
-    var validateHeadres;
+  it('returns cached projects on subsequent loads', function () {
+    var result;
+    basicProjectLoad();
+    
+    result = projects.load();
+  });
+  
+  it('refreshes cache when requested', function () {
+    basicProjectLoad();
+    
+    projects.reload();
+    
+    basicProjectLoad();
+  });
+  
+  afterEach(function () {
+    $httpBackend.verifyNoOutstandingExpectation();
+    $httpBackend.verifyNoOutstandingRequest();    
+  });
+  
+  basicProjectLoad = function() {
+    var validateHeadres, result, success;
     
     $cookies.put('gtoken', 'testGtoken');
     
@@ -22,16 +42,20 @@ describe('Projects Services', function () {
       return headers['gtoken'] === 'testGtoken';
     };
     
+    success = jasmine.createSpy('success');
+    
     $httpBackend.expect('GET', '/projects', null, validateHeaders).respond(function(method, url, data){ 
         return [200, [{ id: 'someProject' }]]; 
     });
 
-    projects.load();
+    result = projects.load(success);
     $httpBackend.flush();
 
-    expect(projects.list.length).toEqual(1);
-    expect(projects.list[0].id).toEqual('someProject');
-  });
+    expect(result.length).toEqual(1);
+    expect(result[0].id).toEqual('someProject');
+    expect(success).toHaveBeenCalled();
+  };
+  
   
   afterEach(function () {
     $cookies.remove('gtoken');

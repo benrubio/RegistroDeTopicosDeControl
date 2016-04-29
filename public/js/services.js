@@ -6,8 +6,9 @@ var topicosServices = angular.module('topicosServices', ['ngResource', 'ngCookie
 
 topicosServices.factory('projects', ['$resource', '$cookies',
   function projectsFactory($resource, $cookies){
-    var resource, gTokenGetter, count, load, projectList = [], that = { };
+    var resource, gTokenGetter, loaded, load, reload, projectList = [], that = { };
 
+    loaded = false;
     gTokenGetter = function() {
       return $cookies.get('gtoken');
     }
@@ -20,20 +21,28 @@ topicosServices.factory('projects', ['$resource', '$cookies',
 	  }
     });
     
-    load = function () {
-      projectList = resource.query(function success (value, responseHeaders) {
+    load = function (success) {
+      if (!loaded) {
+        projectList = resource.query(function successResponse (value, responseHeaders) {
+          success(value);
+        },
+        function errorResponse (httpResponse) {
+
+        });
         
-      },
-      function error (httpResponse) {
-        
-      });
+        loaded = true;
+      }
       
-      that.list = projectList;
+      return projectList;
     };
     
     that.load = load;
+        
+    reload = function () {
+      loaded = false;
+    };
     
-    that.list = projectList;
+    that.reload = reload;
     
     return that;
   }]);

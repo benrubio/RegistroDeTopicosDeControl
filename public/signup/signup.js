@@ -9,6 +9,7 @@ angular.module('RegistroDeTopicosDeControl.SignUp', ['ngRoute'])
   });
 }])
 
-.controller('SignUpCtrl', ['$scope', function($scope) {
-  $scope.someVariable = {display_name:'Hello World.'};
+.controller('SignUpCtrl', ['$scope', 'projects', function($scope, projects) {
+  $scope.projects = projects.load(function () { });
+  
 }]);
