@@ -59,15 +59,21 @@ describe('create project', function () {
   
   it('should create a project using data store', function () {
     var project = {},
-      userId = {};
+      userId = {},
+      createResult;
     
     projectsStore.createProject = jasmine.createSpy('createProject');
-    projectsStore.createProject.andCallFake(function (p) {
-      return p;
+    projectsStore.createProject.andCallFake(function (u, p) {
+      p.id = 'id';
+      return {resultCode: 'OK', result: p};
     });
     
-    project = model.createProject(userId, project);
+    createResult = model.createProject(userId, project);
     
     expect(projectsStore.createProject).toHaveBeenCalledWith(userId, project);
+    expect(createResult).toBeDefined();
+    expect(createResult.resultCode).toEqual('OK');
+    expect(createResult.result).toBeDefined();
+    expect(createResult.result).toEqual(project);
   });
 });

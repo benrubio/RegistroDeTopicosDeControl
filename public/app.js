@@ -6,6 +6,7 @@ var app = angular.module('RegistroDeTopicosDeControl', [
   'ngRoute',
   'ngCookies',
   'RegistroDeTopicosDeControl.Home',
+  'RegistroDeTopicosDeControl.Project',
   'RegistroDeTopicosDeControl.SignUp',
   'topicosServices'
 ]);

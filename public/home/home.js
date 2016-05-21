@@ -13,7 +13,9 @@ angular.module('RegistroDeTopicosDeControl.Home', ['ngRoute'])
   projects.bit = 'hello';
   $scope.projects = projects.load(function (list) {
     if (list.length === 0) {
-      $location.path('/signup');
+      projects.create({}, function (project) {
+        $location.path('/projects/' + project.id);  
+      });
     }
   });
 }]);

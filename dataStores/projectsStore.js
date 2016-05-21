@@ -17,6 +17,8 @@ var projectsStore = function () {
     
     project.id = projects[userId].length;
     projects[userId].push(project);
+    
+    return {resultCode: 'OK', result: project};
   };
   that.createProject = createProject;
   

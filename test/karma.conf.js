@@ -11,7 +11,9 @@ module.exports = function(config){
       'public/bower_components/angular-cookies/angular-cookies.js',
       'public/js/**/*.js',
       'public/home/*.js',
-      'test/unit/public/**/*.js'
+      'public/projects/*.js',
+      'test/unit/public/**/*.js',
+      'test/unit/public/*.js'
     ],
 
     autoWatch : true,

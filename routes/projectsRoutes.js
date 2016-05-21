@@ -19,8 +19,17 @@ var projectsRoutes = {
       response.status(500).end();
     },
     post: function (request, response) {
-      var projects = model.createProject(request.identity, request.body);
-      response.status(200).end();
+      var project = model.createProject(request.identity, request.body);
+      
+      if (project.resultCode === 'NotFound') {
+        response.status(404).end();
+        return;
+      } else  if (project.resultCode === 'OK') {
+        response.status(200).json(project.result);  
+        return;
+      }
+      
+      response.status(500).end();
     }
   }
 };

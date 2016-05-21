@@ -19,6 +19,12 @@ describe('Home Controller', function () {
       return list;      
     });
     
+    projects.create = jasmine.createSpy('create').andCallFake(function (project, successCallback) {
+      project.id = '0';
+      successCallback(project);
+      return project;
+    });
+    
     run = function () { $controller("HomeCtrl", {$scope: scope, $location: location, projects: projects}) };
   });
   
@@ -30,10 +36,13 @@ describe('Home Controller', function () {
     expect(scope.projects.length).toEqual(0);
   });
   
-  it ('should navigate to the project setup when there are no projects', function () {
+  it ('should create seed project and navigate to the project setup when there are no projects', function () {
     run();
     
-    expect(location.path).toHaveBeenCalledWith('/signup');
+    expect(projects.load).toHaveBeenCalled();
+    expect(projects.create).toHaveBeenCalled();
+    
+    expect(location.path).toHaveBeenCalledWith('/projects/0');
   });
   
   it ('should not navigate to project setup when there are projects', function () {
