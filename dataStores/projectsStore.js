@@ -5,12 +5,12 @@ var projectsStore = function () {
   var getProjects, createProject,
     that = { }, projects = { };
   
-  getProjects = function (userId) {
-    return {resultCode: 'OK', result: projects[userId]};
+  getProjects = function (userId, continueWith) {
+    continueWith({resultCode: 'OK', result: projects[userId]});
   };
   that.getProjects = getProjects;
   
-  createProject = function (userId, project) {
+  createProject = function (userId, project, continueWith) {
     if (typeof projects[userId] === 'undefined') {
       projects[userId] = [];
     }
@@ -18,7 +18,7 @@ var projectsStore = function () {
     project.id = projects[userId].length;
     projects[userId].push(project);
     
-    return {resultCode: 'OK', result: project};
+    continueWith({resultCode: 'OK', result: project});
   };
   that.createProject = createProject;
   

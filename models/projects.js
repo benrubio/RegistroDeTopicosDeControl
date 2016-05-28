@@ -3,21 +3,26 @@
 
 var projectsStore = require('../dataStores/projectsStore.js');
 
-var getProjects = function (userId) {
+var getProjects = function (userId, continueWith) {
+  var result;
   
-  var projectsFetch = projectsStore.getProjects(userId);
-  
-  if (projectsFetch.resultCode === 'NotFound') {
-    return { resultCode : 'NotFound' };
-  } else if (projectsFetch.resultCode === 'OK') {
-    return { resultCode : 'OK', result : projectsFetch.result };
-  }
-  
-  return { resultCode : 'Unknown' };
+  projectsStore.getProjects(userId, function (projectsFetch) {
+    if (projectsFetch.resultCode === 'NotFound') {
+      result = { resultCode : 'NotFound' };
+    } else if (projectsFetch.resultCode === 'OK') {
+      result = { resultCode : 'OK', result : projectsFetch.result };
+    } else {
+      result = { resultCode : 'Unknown' };
+    }
+
+    continueWith(result);
+  });
 };
 
-var createProject = function (userId, project) {
-  return projectsStore.createProject(userId, project);
+var createProject = function (userId, project, continueWith) {
+  projectsStore.createProject(userId, project, function (projectCreate) {
+    continueWith(projectCreate);
+  });
 }
 
 module.exports = {getProjects: getProjects, createProject: createProject};

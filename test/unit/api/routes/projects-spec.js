@@ -11,7 +11,7 @@ describe('projects', function () {
     routes = proxyquire('../../../../routes/projectsRoutes.js', {'../models/projects.js': model});
   });
   
-  describe('projects get route', function () {
+  describe('get route', function () {
     it('should return 404 Not found when user does not exist', function () {
       var response = {
         status: jasmine.createSpy('status'),
@@ -20,8 +20,8 @@ describe('projects', function () {
 
       response.status.andReturn(response);
 
-      model.getProjects = function (identity) {
-        return { resultCode: 'NotFound' };
+      model.getProjects = function (identity, continueWith) {
+        continueWith({ resultCode: 'NotFound' });
       };
 
       routes['/'].get({}, response);
@@ -40,8 +40,8 @@ describe('projects', function () {
       response.status.andReturn(response);
       response.set.andReturn(response);
 
-      model.getProjects = function (identity) {
-        return { resultCode: 'OK', result: projects};
+      model.getProjects = function (identity, continueWith) {
+        continueWith({ resultCode: 'OK', result: projects});
       };
 
       routes['/'].get({}, response);
@@ -59,8 +59,8 @@ describe('projects', function () {
 
       response.status.andReturn(response);
       
-      model.getProjects = function (identity) {
-        return { resultCode: 'Unexpected', result: projects};
+      model.getProjects = function (identity, continueWith) {
+        continueWith({ resultCode: 'Unexpected', result: projects});
       };
 
       routes['/'].get({}, response);
@@ -68,6 +68,67 @@ describe('projects', function () {
       expect(response.end).toHaveBeenCalled();
     });
   });
+  
+  describe('get-single route', function () {
+    it('should return 404 Not found when the projects are not found', function () {
+      var response = {
+        status: jasmine.createSpy('status'),
+        end: jasmine.createSpy('end')
+      };
+
+      response.status.andReturn(response);
+
+      model.getProject = function (identity, projectId, continuewWith) {
+        expect(projectId).toEqual('0');
+        continuewWith({ resultCode: 'NotFound' });
+      };
+
+      routes['/:projectId'].get({ projectId: '0' }, response);
+      expect(response.status).toHaveBeenCalledWith(404);
+      expect(response.end).toHaveBeenCalled();
+    });
+
+    it('should return 200 OK with project when projects is found', function () {
+      var response = {
+          status: jasmine.createSpy('status'),
+          set: jasmine.createSpy('set'),
+          json: jasmine.createSpy('json')
+        },
+        project = { id: '0' };
+
+      response.status.andReturn(response);
+      response.set.andReturn(response);
+
+      model.getProject = function (identity, projectId, continueWith) {
+        expect(projectId).toEqual('0');
+        continueWith({ resultCode: 'OK', result: project });
+      };
+
+      routes['/:projectId'].get({ projectId: '0' }, response);
+      expect(response.status).toHaveBeenCalledWith(200);
+      expect(response.set).toHaveBeenCalledWith({ 'Expires': '-1' });
+      expect(response.json).toHaveBeenCalledWith(project);
+    });
+    
+    it('should return 500 if anything unexpected happens', function () {
+      var response = {
+        status: jasmine.createSpy('status'),
+        end: jasmine.createSpy('end')
+      };
+
+      response.status.andReturn(response);
+
+      model.getProject = function (identity, projectId, continueWith) {
+        expect(projectId).toEqual('0');
+        continueWith({ resultCode: 'Unexpected' });
+      };
+
+      routes['/:projectId'].get({ projectId: '0' }, response);
+      expect(response.status).toHaveBeenCalledWith(500);
+      expect(response.end).toHaveBeenCalled();
+    });
+  });
+  
   describe('create route', function () {
     it('should return 404 Not found when user does not exist', function () {
       var response = {
@@ -80,9 +141,9 @@ describe('projects', function () {
 
       response.status.andReturn(response);
 
-      model.createProject = function (identity, body) {
+      model.createProject = function (identity, body, continueWith) {
         expect(body).toBe(request.body);
-        return { resultCode: 'NotFound' };
+        continueWith({ resultCode: 'NotFound' });
       };
 
       routes['/'].post(request, response);
@@ -102,8 +163,8 @@ describe('projects', function () {
 
       response.status.andReturn(response);
 
-      model.createProject = function (identity, project) {
-        return { resultCode: 'OK', result: project};
+      model.createProject = function (identity, project, continueWith) {
+        continueWith({ resultCode: 'OK', result: project});
       };
 
       routes['/'].post(request, response);
@@ -122,9 +183,9 @@ describe('projects', function () {
 
       response.status.andReturn(response);
 
-      model.createProject = function (identity, body) {
+      model.createProject = function (identity, body, continueWith) {
         expect(body).toBe(request.body);
-        return { resultCode: 'Unexpected' };
+        continueWith({ resultCode: 'Unexpected' });
       };
 
       routes['/'].post(request, response);

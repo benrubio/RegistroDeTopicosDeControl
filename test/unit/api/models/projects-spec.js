@@ -13,10 +13,14 @@ describe('get projects', function () {
   });
   
   it('should return NotFound when user does not exist', function () {
-    projectsStore.getProjects = function (userId) {
-      return {resultCode: 'NotFound'};
+    var projects;
+    projectsStore.getProjects = function (userId, continueWith) {
+      continueWith({resultCode: 'NotFound'});
     };
-    var projects = model.getProjects({userId: '12345'});
+    
+    model.getProjects({userId: '12345'}, function (result) {
+      projects = result;
+    });
     
     expect(projects.resultCode).toEqual('NotFound');
   });
@@ -25,11 +29,13 @@ describe('get projects', function () {
     var userProjects = [{name: 'TestProject'}],
       projects;
     
-    projectsStore.getProjects = function (userId) {
-      return {resultCode: 'OK', result: userProjects};
+    projectsStore.getProjects = function (userId, continueWith) {
+      continueWith({resultCode: 'OK', result: userProjects});
     };
     
-    projects = model.getProjects({userId: '12345'});
+    model.getProjects({userId: '12345'}, function (result) {
+      projects = result;
+    });
     
     expect(projects.resultCode).toEqual('OK');
     expect(projects.result).toBe(userProjects);
@@ -38,11 +44,13 @@ describe('get projects', function () {
   it('should return unknown when dataStore behavior is unexpected', function () {
     var projects;
     
-    projectsStore.getProjects = function (userId) {
-      return {resultCode: 'SomeOtherResultCode'};
+    projectsStore.getProjects = function (userId, continueWith) {
+      continueWith({resultCode: 'SomeOtherResultCode'});
     };
     
-    projects = model.getProjects({userId: '12345'});
+    model.getProjects({userId: '12345'}, function (result) {
+      projects = result;
+    });
     
     expect(projects.resultCode).toEqual('Unknown');
   });
@@ -63,14 +71,16 @@ describe('create project', function () {
       createResult;
     
     projectsStore.createProject = jasmine.createSpy('createProject');
-    projectsStore.createProject.andCallFake(function (u, p) {
+    projectsStore.createProject.andCallFake(function (u, p, cW) {
       p.id = 'id';
-      return {resultCode: 'OK', result: p};
+      cW({resultCode: 'OK', result: p});
     });
     
-    createResult = model.createProject(userId, project);
+    model.createProject(userId, project, function (result) {
+      createResult = result;
+    });
     
-    expect(projectsStore.createProject).toHaveBeenCalledWith(userId, project);
+    expect(projectsStore.createProject).toHaveBeenCalled();
     expect(createResult).toBeDefined();
     expect(createResult.resultCode).toEqual('OK');
     expect(createResult.result).toBeDefined();
