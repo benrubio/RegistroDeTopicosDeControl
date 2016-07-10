@@ -3,7 +3,7 @@
 
 var proxyquire = require('proxyquire');
 
-describe('Auth Component succesful external authN', function () {
+describe('Auth component succesful external authN', function () {
   var auth,
     request,
     response,

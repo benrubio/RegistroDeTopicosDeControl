@@ -5,9 +5,12 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var GitkitClient = require('gitkitclient');
+var AWS = require('aws-sdk');
 
 var fs = require('fs');
 var gitkitClient = new GitkitClient(JSON.parse(fs.readFileSync('./gitkit-server-config.json')));
+
+AWS.config.loadFromPath('./aws.config.json');
 
 var auth = require('./models/auth.js');
 var projects = require('./routes/projects.js');
