@@ -1,41 +1,49 @@
 'use strict';
 /*global module, require */
 
-var userStore = require('../dataStores/userStore.js');
-
 var authModule = function () {
-  var gitkitClient, authN, setGitkitClient,
+  var firebaseAuth, authN, setFirebaseAuth,
     that = { };
   
   authN = function (request, response, next) {
     var gtoken = request.headers.gtoken;
     if (gtoken === undefined
          || gtoken.trim() === '') {
-      response.status(401).end();
-    } else {
-      gitkitClient.verifyGitkitToken(gtoken, function (err, resp) {
-        var identity = { id: resp.user_id, provider: resp.provider_id },
-          userResult;
-        
-        userResult = userStore.getUser(identity);
-        
-        if (userResult.resultCode === 'OK'
-             || userResult.resultCode === 'NotFound') {
-          request.identity = userResult.result;
-          request.gtoken = resp;
-          next();
-        } else {
-          response.status(500).end();
+      var authNResult = {
+        getIdentity: function () {
+          return null;
+        },
+        isAuthenticated: function () {
+          return false;
         }
-      });
+      };
+      request.authNResult = authNResult;
+      next();
+    } else {
+      firebaseAuth.verifyIdToken(gtoken)
+        .then(function (decodedToken) {
+          var authNResult = {
+            getIdentity: function () {
+              return { userId: decodedToken.uid };
+            },
+            isAuthenticated: function () {
+              return true;
+            }
+          };
+          request.authNResult = authNResult;
+          next();
+        })
+        .catch(function (error) {
+          next();
+        });
     }
   };
   that.authN = authN;
   
-  setGitkitClient = function (client) {
-    gitkitClient = client;
+  setFirebaseAuth = function (auth) {
+    firebaseAuth = auth;
   };
-  that.setGitkitClient = setGitkitClient;
+  that.setFirebaseAuth = setFirebaseAuth;
   
   return that;
 };

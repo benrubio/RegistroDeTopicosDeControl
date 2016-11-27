@@ -4,18 +4,22 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var GitkitClient = require('gitkitclient');
+var firebaseAdmin = require('firebase-admin');
 var AWS = require('aws-sdk');
 
 var fs = require('fs');
-var gitkitClient = new GitkitClient(JSON.parse(fs.readFileSync('./gitkit-server-config.json')));
+
+firebaseAdmin.initializeApp({
+  credential: firebaseAdmin.credential.cert("C:/IPN/Secrets/TopicosDeControl/ProjectManagement/projectmanagement-52985-firebase-adminsdk-96p9x-dfb49fdb93.json"),
+  databaseURL: "https://projectmanagement-52985.firebaseio.com"
+});
 
 AWS.config.loadFromPath('./aws.config.json');
 
 var auth = require('./models/auth.js');
 var projects = require('./routes/projects.js');
 
-auth.setGitkitClient(gitkitClient);
+auth.setFirebaseAuth(firebaseAdmin.auth());
 
 var app = express();
 

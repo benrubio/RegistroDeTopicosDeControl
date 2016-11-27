@@ -15,17 +15,44 @@
   <script src="home/home.js"></script>
   <script src="projects/project.js"></script>
   
-  <script type="text/javascript" src="//www.gstatic.com/authtoolkit/js/gitkit.js"></script>
-  <link type=text/css rel=stylesheet href="//www.gstatic.com/authtoolkit/css/gitkit.css" />
+  <script src="https://www.gstatic.com/firebasejs/3.6.1/firebase.js"></script>
+  <script>
+    var idToken = "";
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyD8q5KgW2KVR_Td3OLE1Daum43uxS3Ckuo",
+      authDomain: "projectmanagement-52985.firebaseapp.com",
+      databaseURL: "https://projectmanagement-52985.firebaseio.com",
+      storageBucket: "projectmanagement-52985.appspot.com",
+      messagingSenderId: "1095085164738"
+    };
+    firebase.initializeApp(config);
+    var provider = new firebase.auth.GoogleAuthProvider();
+    firebase.auth().signInWithPopup(provider).then(function(result) {
+      // This gives you a Google Access Token. You can use it to access the Google API.
+      var token = result.credential.accessToken;
+      // The signed-in user info.
+      var user = result.user;
+      // ...
+      firebase.auth().currentUser.getToken(/* forceRefresh */ true).then(function(firebaseToken) {
+        // Send token to your backend via HTTPS
+        // ...
+        idToken = firebaseToken;
+      }).catch(function(error) {
+        // Handle error
+      });
+    }).catch(function(error) {
+      // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      // The email of the user's account used.
+      var email = error.email;
+      // The firebase.auth.AuthCredential type that was used.
+      var credential = error.credential;
+      // ...
+    });
+    
 
-  <script type=text/javascript>
-    window.google.identitytoolkit.signInButton(
-        '#navbar',
-        {
-          widgetUrl: "/gitkit-widget.html",
-          signOutUrl: "/index.html"
-        }
-    );
   </script>
 </head>
 <body>

@@ -11,7 +11,7 @@ topicosServices.factory('projects', ['$resource', '$cookies',
 
     loaded = false;
     gTokenGetter = function() {
-      return $cookies.get('gtoken');
+      return idToken;
     }
     
     resource = $resource('/projects/:projectId', { projectId: '' }, {
@@ -33,7 +33,7 @@ topicosServices.factory('projects', ['$resource', '$cookies',
     });
     
     load = function (success) {
-      if (!loaded) {
+      if (1 === 1 || !loaded) {
         projectList = resource.query(function successResponse (value, responseHeaders) {
           
           for (var i = 0; i < value.length; i++) {
@@ -57,7 +57,7 @@ topicosServices.factory('projects', ['$resource', '$cookies',
     loadProject = function (id, success) {
       var project;
       
-      if (lookup[id] != undefined) {
+      if (0 === 1 && lookup[id] != undefined) {
         project = lookup[id].project;
         safeMethodCall(success, [ lookup[id] ]);
       } else {
