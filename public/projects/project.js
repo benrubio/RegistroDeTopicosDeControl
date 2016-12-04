@@ -13,4 +13,8 @@ angular.module('RegistroDeTopicosDeControl.Project', ['ngRoute'])
   function($scope, $location, $routeParams, projects) {
     var projectId = $routeParams.projectId;
     $scope.project = projects.loadProject(projectId);
+    
+    $scope.refresh = function () {
+      projects.loadProject(0);
+    };
 }]);

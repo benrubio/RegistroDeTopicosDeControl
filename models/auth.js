@@ -2,11 +2,14 @@
 /*global module, require */
 
 var authModule = function () {
-  var firebaseAuth, authN, setFirebaseAuth,
-    that = { };
+  var firebaseAuth, authN, setFirebaseAuth, 
+      debugLogging, setDebugLogging, debugLog,
+      that = { };
   
   authN = function (request, response, next) {
     var gtoken = request.headers.gtoken;
+    debugLog('Gtoken: ' + gtoken);
+    
     if (gtoken === undefined
          || gtoken.trim() === '') {
       var authNResult = {
@@ -22,6 +25,7 @@ var authModule = function () {
     } else {
       firebaseAuth.verifyIdToken(gtoken)
         .then(function (decodedToken) {
+          debugLog('Token verified.' + JSON.stringify(decodedToken));
           var authNResult = {
             getIdentity: function () {
               return { userId: decodedToken.uid };
@@ -34,6 +38,7 @@ var authModule = function () {
           next();
         })
         .catch(function (error) {
+          debugLog('Token verification failed.' + JSON.stringify(error) + error);
           var authNResult = {
             isAuthenticated: function () {
               return false;
@@ -50,6 +55,17 @@ var authModule = function () {
     firebaseAuth = auth;
   };
   that.setFirebaseAuth = setFirebaseAuth;
+  
+  setDebugLogging = function (logDebug) {
+    debugLogging = logDebug;
+  };
+  that.setDebugLogging = setDebugLogging;
+  
+  debugLog = function (details) {
+    if (debugLogging) {
+      console.log(details);
+    }
+  }
   
   return that;
 };
