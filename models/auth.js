@@ -34,6 +34,12 @@ var authModule = function () {
           next();
         })
         .catch(function (error) {
+          var authNResult = {
+            isAuthenticated: function () {
+              return false;
+            }
+          };
+          request.authNResult = authNResult;
           next();
         });
     }

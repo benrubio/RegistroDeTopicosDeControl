@@ -74,78 +74,91 @@ describe('Failed authN', function () {
     request,
     response,
     nextSpy,
-    firebaseAuth,
-    headerManipulationTest,
     authEndDetection;
   
   beforeEach(function () {
     nextSpy = jasmine.createSpy('next');
-    request = { headers: { } };
-    
-    firebaseAuth = {
-      verifyIdToken: function (token) {
-        return new Promise(function (resolve, reject) {
-          reject({ reason: 'failed' });
-        });
-      }
-    };
              
     auth = require('../../../../models/auth.js');
-    auth.setFirebaseAuth(firebaseAuth);
     
     authEndDetection = function () {
       return nextSpy.calls.length === 1;
     };
   });
   
-  it('should unauthorize when gToken header is not present', function () {
-    var validation;
+  describe('missing authentication', function () {
+    var headerManipulationTest;
     
-    validation = function () {
-      expect(request.authNResult).toBeDefined();
-      expect(request.authNResult.isAuthenticated()).toBeFalsy();
-    };
-    
-    headerManipulationTest(authEndDetection, validation);
-  });
-  
-  it('should unauthorize when gToken is empty', function () {
-    var validation;
-    
-    request.headers.gtoken = '';
-    
-    validation = function () {
-      expect(request.authNResult).toBeDefined();
-      expect(request.authNResult.isAuthenticated()).toBeFalsy();
-    };
-    
-    headerManipulationTest(authEndDetection, validation);
-  });
-  
-  it('should unauthorize when gToken is whitespace', function () {
-    var validation;
-    
-    request.headers.gtoken = ' ';
-    
-    validation = function () {
-      expect(request.authNResult).toBeDefined();
-      expect(request.authNResult.isAuthenticated()).toBeFalsy();
-    };
-    
-    headerManipulationTest(authEndDetection, validation);
-  });
-  
-  headerManipulationTest = function (authEndDetection, validation) {
-    runs(function () {
-      auth.authN(request, response, nextSpy);
+    beforeEach(function () { 
+      request = { headers: { } };
     });
-    
-    waitsFor(function () {
-      return authEndDetection();
-    }, 'Auth should have ended', 100);
+  
+    it('should unauthorize when gToken header is not present', function () {
+      headerManipulationTest(authEndDetection);
+    });
 
-    runs(function () {
-      validation();
+    it('should unauthorize when gToken is empty', function () {
+      request.headers.gtoken = '';
+
+      headerManipulationTest(authEndDetection);
     });
-  };
+
+    it('should unauthorize when gToken is whitespace', function () {
+      request.headers.gtoken = ' ';
+
+      headerManipulationTest(authEndDetection);
+    });
+
+    headerManipulationTest = function (authEndDetection, validation) {
+      runs(function () {
+        auth.authN(request, response, nextSpy);
+      });
+
+      waitsFor(function () {
+        return authEndDetection();
+      }, 'Auth should have ended', 100);
+
+      runs(function () {
+        expect(request.authNResult).toBeDefined();
+        expect(request.authNResult.isAuthenticated()).toBeFalsy();
+      });
+    };
+  });
+  
+  describe('firebase auth error', function () {
+    var headerManipulationTest, firebaseAuth;
+    
+    beforeEach(function () { 
+      
+      firebaseAuth = {
+        verifyIdToken: function (token) {
+          return new Promise(function (resolve, reject) {
+            reject({ reason: 'failed' });
+          });
+        }
+      };
+      
+      auth.setFirebaseAuth(firebaseAuth);
+      
+      request = {
+        headers: {
+          gtoken: 'fakeGtokenHeaderValue'
+        }
+      };
+      
+      runs(function () {
+        auth.authN(request, response, nextSpy);
+      });
+
+      waitsFor(function () {
+        return authEndDetection();
+      }, 'Auth should have ended', 1000);
+    });
+    
+    it('should not be authenticated', function () {
+      expect(request.authNResult).toBeDefined();
+      expect(request.authNResult.isAuthenticated()).toBeFalsy();
+    });
+    
+  });
 });
